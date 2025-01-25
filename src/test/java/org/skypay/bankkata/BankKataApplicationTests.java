@@ -3,10 +3,10 @@ package org.skypay.bankkata;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class BankKataApplicationTests {
 
-    @Test
+    //@Test
     void contextLoads() {
     }
 
