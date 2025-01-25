@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.skypay.bankkata.entities.Transaction;
 import org.skypay.bankkata.enums.TransactionType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skypay.bankkata.enums.ErrorCode.*;
@@ -41,21 +44,21 @@ class AccountTest {
 
     @Test
     void withdrawShouldDecreaseBalance() {
-        account.deposit(1000);
+        account.setBalance(1000); // separate concerns inntest and isolate the withdrawal functionality
         account.withdraw(400);
         assertEquals(600, account.getBalance(), "Balance should be 600 after withdrawing 400.");
     }
 
     @Test
     void withdrawShouldThrowExceptionIfInsufficientFunds() {
-        account.deposit(500);
+        account.setBalance(500); // separate concerns inntest and isolate the withdrawal functionality
         Exception exception = assertThrows(IllegalArgumentException.class, () -> account.withdraw(600));
         assertEquals(INSUFFICIENT_FUNDS.getText(), exception.getMessage());
     }
 
     @Test
     void withdrawShouldThrowExceptionForNegativeAmount() {
-        account.deposit(1000);
+        account.setBalance(1000); // separate concerns inntest and isolate the withdrawal functionality
         Exception exception = assertThrows(IllegalArgumentException.class, () -> account.withdraw(-100));
         assertEquals(INVALID_AMOUNT.getText(), exception.getMessage());
     }
@@ -68,18 +71,18 @@ class AccountTest {
     @Test
     void printStatementShouldPrintCorrectTransactionDetails() {
 
+        List<Transaction> transactions = new ArrayList<>();  // separate concerns inntest and isolate the print functionality
         // Prepare account with some transactions
-        account.deposit(1000); // Deposit 1000
-        account.withdraw(500); // Withdraw 500
-        account.deposit(1000); // Deposit 1000
-        account.deposit(1000); // Deposit 1000
-        account.withdraw(500); // Withdraw 500
-        account.withdraw(500); // Withdraw 500
-        // create the expected
+        transactions.add(new Transaction(TransactionType.DEPOSIT,1000,1000));
+        transactions.add(new Transaction(TransactionType.WITHDRAW,500,500));
+        transactions.add(new Transaction(TransactionType.DEPOSIT,33,533));
+        account.setTransactions(transactions);
 
+        // create the expected
         StringBuffer expectedstatementBuffer = new StringBuffer();
         expectedstatementBuffer.append(PRINT_STATEMENT_HEADER.getText()).append("\n");
-        for (Transaction transaction : account.getTransactions()) {
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
             String formattedAmount = transaction.getType().equals(TransactionType.WITHDRAW)
                     ? "-" + transaction.getAmount()
                     : String.valueOf(transaction.getAmount());

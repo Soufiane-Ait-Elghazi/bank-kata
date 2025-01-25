@@ -12,10 +12,14 @@ import static org.skypay.bankkata.enums.ErrorCode.STATEMENT_FORMAT;
 public class Account implements AccountService {
     private int balance = 0;
     StringBuffer statementBuffer ;
-    private final List<Transaction> transactions = new ArrayList<>();
+    private  List<Transaction> transactions = new ArrayList<>();
 
     public int getBalance() {
         return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
     }
 
     public StringBuffer getStatementBuffer() {
@@ -24,6 +28,9 @@ public class Account implements AccountService {
 
     public List<Transaction> getTransactions() {
         return transactions;
+    }
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
     @Override
@@ -51,7 +58,8 @@ public class Account implements AccountService {
     public void printStatement() {
         StringBuffer statementBuffer = new StringBuffer();
         statementBuffer.append(PRINT_STATEMENT_HEADER.getText()).append("\n");
-        for (Transaction transaction : transactions) {
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
             String formattedAmount = transaction.getType().equals(TransactionType.WITHDRAW)
                     ? "-" + transaction.getAmount()
                     : String.valueOf(transaction.getAmount());
